@@ -40,6 +40,7 @@ import {
 } from './db.js';
 import { startSchedulerLoop } from './task-scheduler.js';
 import { NewMessage, RegisteredGroup, Session } from './types.js';
+import { downloadAndSaveImage, isImageMessage } from './image-handler.js';
 import { loadJson, saveJson } from './utils.js';
 import { logger } from './logger.js';
 
@@ -220,7 +221,7 @@ async function processMessage(msg: NewMessage): Promise<void> {
 
   if (response) {
     lastAgentTimestamp[msg.chat_jid] = msg.timestamp;
-    await sendMessage(msg.chat_jid, `${ASSISTANT_NAME}: ${response}`);
+    await sendMessage(msg.chat_jid, `🤖 *${ASSISTANT_NAME}:*\n${response}`);
   }
 }
 
@@ -343,7 +344,7 @@ function startIpcWatcher(): void {
                 ) {
                   await sendMessage(
                     data.chatJid,
-                    `${ASSISTANT_NAME}: ${data.text}`,
+                    `🤖 *${ASSISTANT_NAME}:*\n${data.text}`,
                   );
                   logger.info(
                     { chatJid: data.chatJid, sourceGroup },
@@ -728,7 +729,7 @@ async function connectWhatsApp(): Promise<void> {
 
   sock.ev.on('creds.update', saveCreds);
 
-  sock.ev.on('messages.upsert', ({ messages }) => {
+  sock.ev.on('messages.upsert', async ({ messages }) => {
     for (const msg of messages) {
       if (!msg.message) continue;
       const rawJid = msg.key.remoteJid;
@@ -746,11 +747,31 @@ async function connectWhatsApp(): Promise<void> {
 
       // Only store full message content for registered groups
       if (registeredGroups[chatJid]) {
+        let enrichedContent: string | undefined;
+
+        if (isImageMessage(msg)) {
+          const group = registeredGroups[chatJid];
+          try {
+            const { containerPath, caption } = await downloadAndSaveImage(msg, group.folder);
+            enrichedContent = caption
+              ? `[Image: ${containerPath}] ${caption}`
+              : `[Image: ${containerPath}]`;
+            logger.info({ chatJid, containerPath }, 'Image message stored');
+          } catch (err) {
+            const caption = msg.message?.imageMessage?.caption || '';
+            enrichedContent = caption
+              ? `[Image - download failed] ${caption}`
+              : '[Image - download failed]';
+            logger.error({ chatJid, err }, 'Failed to download image');
+          }
+        }
+
         storeMessage(
           msg,
           chatJid,
           msg.key.fromMe || false,
           msg.pushName || undefined,
+          enrichedContent,
         );
       }
     }
@@ -794,66 +815,27 @@ async function startMessageLoop(): Promise<void> {
   }
 }
 
-function ensureContainerSystemRunning(): void {
+function ensureDockerRunning(): void {
   try {
-    execSync('container system status', { stdio: 'pipe' });
-    logger.debug('Apple Container system already running');
+    execSync('docker info', { stdio: 'pipe', timeout: 10000 });
+    logger.debug('Docker daemon is running');
   } catch {
-    logger.info('Starting Apple Container system...');
-    try {
-      execSync('container system start', { stdio: 'pipe', timeout: 30000 });
-      logger.info('Apple Container system started');
-    } catch (err) {
-      logger.error({ err }, 'Failed to start Apple Container system');
-      console.error(
-        '\n╔════════════════════════════════════════════════════════════════╗',
-      );
-      console.error(
-        '║  FATAL: Apple Container system failed to start                 ║',
-      );
-      console.error(
-        '║                                                                ║',
-      );
-      console.error(
-        '║  Agents cannot run without Apple Container. To fix:           ║',
-      );
-      console.error(
-        '║  1. Install from: https://github.com/apple/container/releases ║',
-      );
-      console.error(
-        '║  2. Run: container system start                               ║',
-      );
-      console.error(
-        '║  3. Restart NanoClaw                                          ║',
-      );
-      console.error(
-        '╚════════════════════════════════════════════════════════════════╝\n',
-      );
-      throw new Error('Apple Container system is required but failed to start');
-    }
-  }
-
-  // Clean up stopped NanoClaw containers from previous runs
-  try {
-    const output = execSync('container ls -a --format {{.Names}}', {
-      stdio: ['pipe', 'pipe', 'pipe'],
-      encoding: 'utf-8',
-    });
-    const stale = output
-      .split('\n')
-      .map((n) => n.trim())
-      .filter((n) => n.startsWith('nanoclaw-'));
-    if (stale.length > 0) {
-      execSync(`container rm ${stale.join(' ')}`, { stdio: 'pipe' });
-      logger.info({ count: stale.length }, 'Cleaned up stopped containers');
-    }
-  } catch {
-    // No stopped containers or ls/rm not supported
+    logger.error('Docker daemon is not running');
+    console.error('\n╔════════════════════════════════════════════════════════════════╗');
+    console.error('║  FATAL: Docker is not running                                  ║');
+    console.error('║                                                                ║');
+    console.error('║  Agents cannot run without Docker. To fix:                     ║');
+    console.error('║  macOS: Start Docker Desktop                                   ║');
+    console.error('║  Linux: sudo systemctl start docker                            ║');
+    console.error('║                                                                ║');
+    console.error('║  Install from: https://docker.com/products/docker-desktop      ║');
+    console.error('╚════════════════════════════════════════════════════════════════╝\n');
+    throw new Error('Docker is required but not running');
   }
 }
 
 async function main(): Promise<void> {
-  ensureContainerSystemRunning();
+  ensureDockerRunning();
   initDatabase();
   logger.info('Database initialized');
   loadState();

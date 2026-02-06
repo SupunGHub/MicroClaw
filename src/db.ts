@@ -175,10 +175,12 @@ export function storeMessage(
   chatJid: string,
   isFromMe: boolean,
   pushName?: string,
+  enrichedContent?: string,
 ): void {
   if (!msg.key) return;
 
   const content =
+    enrichedContent ||
     msg.message?.conversation ||
     msg.message?.extendedTextMessage?.text ||
     msg.message?.imageMessage?.caption ||
@@ -221,7 +223,7 @@ export function getNewMessages(
 
   const rows = db
     .prepare(sql)
-    .all(lastTimestamp, ...jids, `${botPrefix}:%`) as NewMessage[];
+    .all(lastTimestamp, ...jids, `🤖 *${botPrefix}:*%`) as NewMessage[];
 
   let newTimestamp = lastTimestamp;
   for (const row of rows) {
@@ -245,7 +247,7 @@ export function getMessagesSince(
   `;
   return db
     .prepare(sql)
-    .all(chatJid, sinceTimestamp, `${botPrefix}:%`) as NewMessage[];
+    .all(chatJid, sinceTimestamp, `🤖 *${botPrefix}:*%`) as NewMessage[];
 }
 
 export function createTask(

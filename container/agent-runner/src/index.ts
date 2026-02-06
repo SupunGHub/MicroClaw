@@ -231,6 +231,11 @@ async function main(): Promise<void> {
     prompt = `[SCHEDULED TASK - You are running automatically, not in response to a user message. Use mcp__nanoclaw__send_message if needed to communicate with the user.]\n\n${input.prompt}`;
   }
 
+  // Add hint when images are referenced in the prompt
+  if (prompt.includes('[Image: /workspace/')) {
+    prompt = `Messages may contain image references like [Image: /path/to/image.jpg]. Use the Read tool on the path to see the image.\n\n${prompt}`;
+  }
+
   try {
     log('Starting agent...');
 

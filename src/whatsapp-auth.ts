@@ -66,8 +66,9 @@ async function authenticate(): Promise<void> {
         console.log('\n✗ Logged out. Delete store/auth and try again.');
         process.exit(1);
       } else {
-        console.log('\n✗ Connection failed. Please try again.');
-        process.exit(1);
+        console.log('\n⟳ QR code expired, generating a new one...\n');
+        authenticate();
+        return;
       }
     }
 
