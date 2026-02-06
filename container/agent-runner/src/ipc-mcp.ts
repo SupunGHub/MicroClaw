@@ -1,5 +1,5 @@
 /**
- * IPC-based MCP Server for NanoClaw
+ * IPC-based MCP Server for MicroClaw
  * Writes messages and tasks to files for the host process to pick up
  */
 

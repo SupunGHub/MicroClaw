@@ -1,9 +1,9 @@
 ---
 name: setup
-description: Run initial NanoClaw setup. Use when user wants to install dependencies, authenticate WhatsApp, register their main channel, or start the background services. Triggers on "setup", "install", "configure nanoclaw", or first-time setup requests.
+description: Run initial MicroClaw setup. Use when user wants to install dependencies, authenticate WhatsApp, register their main channel, or start the background services. Triggers on "setup", "install", "configure microclaw", or first-time setup requests.
 ---
 
-# NanoClaw Setup
+# MicroClaw Setup
 
 Run all commands automatically. Only pause when user action is required (scanning QR codes).
 
@@ -39,7 +39,7 @@ Tell the user:
 **If Apple Container is already installed:** Continue to Section 3.
 
 **If Apple Container is NOT installed:** Ask the user:
-> NanoClaw needs a container runtime for isolated agent execution. You have two options:
+> MicroClaw needs a container runtime for isolated agent execution. You have two options:
 >
 > 1. **Apple Container** (default) - macOS-native, lightweight, designed for Apple silicon
 > 2. **Docker** - Cross-platform, widely used, works on macOS and Linux
@@ -64,7 +64,7 @@ container system start
 container --version
 ```
 
-**Note:** NanoClaw automatically starts the Apple Container system when it launches, so you don't need to start it manually after reboots.
+**Note:** MicroClaw automatically starts the Apple Container system when it launches, so you don't need to start it manually after reboots.
 
 #### Option B: Docker
 
@@ -119,7 +119,7 @@ KEY=$(grep "^ANTHROPIC_API_KEY=" .env | cut -d= -f2)
 
 ## 4. Build Container Image
 
-Build the NanoClaw agent container:
+Build the MicroClaw agent container:
 
 ```bash
 ./container/build.sh
@@ -183,7 +183,7 @@ Before registering your main channel, you need to understand an important securi
 > - Can see messages from ALL other registered groups
 > - Can manage and delete tasks across all groups
 > - Can write to global memory that all groups can read
-> - Has read-write access to the entire NanoClaw project
+> - Has read-write access to the entire MicroClaw project
 >
 > **Recommendation:** Use your personal "Message Yourself" chat or a solo WhatsApp group as your main channel. This ensures only you have admin control.
 >
@@ -196,7 +196,7 @@ Before registering your main channel, you need to understand an important securi
 
 If they choose option 3, ask a follow-up:
 
-> You've chosen a group with other people. This means everyone in that group will have admin privileges over NanoClaw.
+> You've chosen a group with other people. This means everyone in that group will have admin privileges over MicroClaw.
 >
 > Are you sure you want to proceed? The other members will be able to:
 > - Read messages from your other registered chats
@@ -254,7 +254,7 @@ mkdir -p groups/main/logs
 ## 9. Configure External Directory Access (Mount Allowlist)
 
 Ask the user:
-> Do you want the agent to be able to access any directories **outside** the NanoClaw project?
+> Do you want the agent to be able to access any directories **outside** the MicroClaw project?
 >
 > Examples: Git repositories, project folders, documents you want Claude to work on.
 >
@@ -347,7 +347,7 @@ Tell the user:
 > **Security notes:**
 > - Sensitive paths (`.ssh`, `.gnupg`, `.aws`, credentials) are always blocked
 > - This config file is stored outside the project, so agents cannot modify it
-> - Changes require restarting the NanoClaw service
+> - Changes require restarting the MicroClaw service
 >
 > To grant a group access to a directory, add it to their config in `data/registered_groups.json`:
 > ```json

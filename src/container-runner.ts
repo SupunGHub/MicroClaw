@@ -1,5 +1,5 @@
 /**
- * Container Runner for NanoClaw
+ * Container Runner for MicroClaw
  * Spawns agent execution in Docker container and handles IPC
  */
 import { exec, spawn } from 'child_process';

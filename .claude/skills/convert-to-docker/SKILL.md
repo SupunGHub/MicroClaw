@@ -1,12 +1,12 @@
 ---
 name: convert-to-docker
-description: Convert NanoClaw from Apple Container to Docker for cross-platform support. Use when user wants to run on Linux, switch to Docker, enable cross-platform deployment, or migrate away from Apple Container. Triggers on "docker", "linux support", "convert to docker", "cross-platform", or "replace apple container".
+description: Convert MicroClaw from Apple Container to Docker for cross-platform support. Use when user wants to run on Linux, switch to Docker, enable cross-platform deployment, or migrate away from Apple Container. Triggers on "docker", "linux support", "convert to docker", "cross-platform", or "replace apple container".
 disable-model-invocation: true
 ---
 
 # Convert to Docker
 
-This skill migrates NanoClaw from Apple Container (macOS-only) to Docker for cross-platform support (macOS and Linux).
+This skill migrates MicroClaw from Apple Container (macOS-only) to Docker for cross-platform support (macOS and Linux).
 
 **What this changes:**
 - Container runtime: Apple Container → Docker
@@ -201,7 +201,7 @@ Docker provides cross-platform support (macOS and Linux), a large ecosystem, and
 ```markdown
 **Can I run this on Linux?**
 
-Yes. NanoClaw uses Docker, which works on both macOS and Linux. Just install Docker and run `/setup`.
+Yes. MicroClaw uses Docker, which works on both macOS and Linux. Just install Docker and run `/setup`.
 ```
 
 ## 5. Update Skills

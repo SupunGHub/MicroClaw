@@ -1,4 +1,4 @@
-# NanoClaw Specification
+# MicroClaw Specification
 
 A personal Claude assistant accessible via WhatsApp, with persistent memory per conversation, scheduled tasks, and email integration.
 
@@ -258,7 +258,7 @@ Files with `{{PLACEHOLDER}}` values need to be configured:
 
 ## Memory System
 
-NanoClaw uses a hierarchical memory system based on CLAUDE.md files.
+MicroClaw uses a hierarchical memory system based on CLAUDE.md files.
 
 ### Memory Hierarchy
 
@@ -398,7 +398,7 @@ This allows the agent to understand the conversation context even if it wasn't m
 
 ## Scheduled Tasks
 
-NanoClaw has a built-in scheduler that runs tasks as full agents in their group's context.
+MicroClaw has a built-in scheduler that runs tasks as full agents in their group's context.
 
 ### How Scheduling Works
 
@@ -459,7 +459,7 @@ From main channel:
 
 ## MCP Servers
 
-### NanoClaw MCP (built-in)
+### MicroClaw MCP (built-in)
 
 The `nanoclaw` MCP server is created dynamically per agent call with the current group's context.
 
@@ -479,11 +479,11 @@ The `nanoclaw` MCP server is created dynamically per agent call with the current
 
 ## Deployment
 
-NanoClaw runs as a single macOS launchd service.
+MicroClaw runs as a single macOS launchd service.
 
 ### Startup Sequence
 
-When NanoClaw starts, it:
+When MicroClaw starts, it:
 1. **Ensures Docker daemon is running** - Checks on startup, fails with clear error if not
 2. Initializes the SQLite database
 3. Loads state (registered groups, sessions, router state)

@@ -663,7 +663,7 @@ async function connectWhatsApp(): Promise<void> {
     },
     printQRInTerminal: false,
     logger,
-    browser: ['NanoClaw', 'Chrome', '1.0.0'],
+    browser: ['MicroClaw', 'Chrome', '1.0.0'],
   });
 
   sock.ev.on('connection.update', (update) => {
@@ -674,7 +674,7 @@ async function connectWhatsApp(): Promise<void> {
         'WhatsApp authentication required. Run /setup in Claude Code.';
       logger.error(msg);
       exec(
-        `osascript -e 'display notification "${msg}" with title "NanoClaw" sound name "Basso"'`,
+        `osascript -e 'display notification "${msg}" with title "MicroClaw" sound name "Basso"'`,
       );
       setTimeout(() => process.exit(1), 1000);
     }
@@ -784,7 +784,7 @@ async function startMessageLoop(): Promise<void> {
     return;
   }
   messageLoopRunning = true;
-  logger.info(`NanoClaw running (trigger: @${ASSISTANT_NAME})`);
+  logger.info(`MicroClaw running (trigger: @${ASSISTANT_NAME})`);
 
   while (true) {
     try {
@@ -843,6 +843,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((err) => {
-  logger.error({ err }, 'Failed to start NanoClaw');
+  logger.error({ err }, 'Failed to start MicroClaw');
   process.exit(1);
 });
